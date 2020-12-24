@@ -1,0 +1,60 @@
+#%RAML 1.0
+title: eCommerce-assignment
+
+description: This is the eCom API to manage the orders.
+
+types:
+  eCommerce: !include order_details/order_details.raml
+
+traits:
+  client-id-required:
+    headers:
+      client_id:
+        type: string
+      client_secret:
+        type: string
+    responses:
+      401:
+        description: Unauthorized, The client_id or client_secret are not valid or the client does not have access.
+      429:
+        description: The client used all of it's request quota for the current period.
+      500:
+        description: An error ocurred, see the specific message (Only if it is a WSDL enpoint).
+      503:
+        description: Contracts Information Unreachable.
+
+
+/customer_orders:
+  post:
+    is: [client-id-required]
+    description: This is the API to update customer's orders.
+    body:
+      application/json:
+        type: eCommerce
+        examples:
+          input: !include example/example.raml
+    responses:
+      201:
+        body:
+          application/json:
+            example:
+              message: Order added.
+  /{ID}:
+    patch:
+      is: [client-id-required]
+      description: This is the API to update customer's orders.
+      body:
+        application/json:
+          type: eCommerce[]
+          examples:
+            input: !include example/examples.raml
+    delete:
+      is: [client-id-required]
+      description: To delete the orders.
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                message: Order deleted.
+
